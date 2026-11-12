@@ -1,0 +1,37 @@
+{
+  "experiment_duration_s": 300,
+  "convergence": {
+    "avg_ms": 224.3,
+    "events": 13,
+    "local_reasoning_ratio": 0.723
+  },
+  "path_stability": {
+    "PSI": 0.568,
+    "avg_duration_s": 170.5,
+    "rerouting_per_hour": 0.0
+  },
+  "resource": {
+    "avg_cpu_percent": 17.2,
+    "avg_memory_mb": 125.1,
+    "routing_overhead_percent": 0.05
+  },
+  "kv_cache": {
+    "avg_hit_ratio": 0.324,
+    "nodes_reporting": 24
+  },
+  "moqr": {
+    "optimizations": 27,
+    "avg_latency_ms": 30.83,
+    "avg_pareto_size": 12,
+    "warm_start_ratio": 0.963,
+    "qos_satisfaction_rate": 0.444,
+    "avg_topsis_score": 0.538,
+    "objectives": {
+      "avg_delay_ms": 12.11,
+      "avg_bandwidth_mbps": 2777.8,
+      "avg_compute_ratio": 2.911,
+      "avg_lifetime_s": 120.0,
+      "avg_energy_j": 3.11
+    }
+  }
+}

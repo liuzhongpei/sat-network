@@ -1,0 +1,30 @@
+# 扩展性探针构型: 20 轨道面 x 20 卫星 = 400 节点, 单星 4 条 ISL
+# 几何: 同轨 2165km 恒定; 异轨 1411~2232km
+# max_range_km=2400: 全链路保持在线(探针求稳, 测稳态开销)
+constellation:
+  name: sat-20x20
+  planes: 20
+  sats_per_plane: 20
+  altitude_km: 550.0
+  inclination_deg: 53.0
+  raan_spread_deg: 360.0
+  phase_factor: 1
+  epoch_offset_s: 0.0
+
+isl:
+  rate_mbps: 100
+  links_per_sat: 4
+  wrap_planes: true
+  polar_cutoff_lat_deg: 0
+  los_margin_km: 80
+  max_range_km: 2400
+  static_delay_ms: 0
+
+node:
+  kind: linux
+  image: sat-router:latest
+
+simulation:
+  step_seconds: 60
+  speedup: 1.0
+  delay_eps_ms: 1.0

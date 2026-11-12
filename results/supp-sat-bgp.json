@@ -1,0 +1,65 @@
+{
+  "env": "sat-bgp",
+  "started": "2026-07-31 22:16:23",
+  "stretch": {
+    "pairs": 552,
+    "measured": 552,
+    "unreachable": 0,
+    "avg_stretch": 1.0,
+    "max_stretch": 1.0,
+    "optimal_pairs_pct": 100.0,
+    "sub_optimal_anomaly": 0,
+    "worst_pairs": [],
+    "loop_free": true
+  },
+  "throughput": {
+    "sat0-0->sat0-1": {
+      "mbps": 15049.1
+    },
+    "sat0-0->sat2-3": {
+      "mbps": 9297.1
+    }
+  },
+  "cpu": {
+    "avg_pct": 0.14,
+    "max_pct": 0.44,
+    "per_node": {
+      "sat2-5": 0.14,
+      "sat2-2": 0.1,
+      "sat3-2": 0.44,
+      "sat1-4": 0.19,
+      "sat3-0": 0.07,
+      "sat0-1": 0.08,
+      "sat0-2": 0.15,
+      "sat3-1": 0.17,
+      "sat3-5": 0.07,
+      "sat3-3": 0.04,
+      "sat1-5": 0.12,
+      "sat1-1": 0.04,
+      "sat2-3": 0.14,
+      "sat1-2": 0.08,
+      "sat3-4": 0.13,
+      "sat0-4": 0.15,
+      "sat0-3": 0.1,
+      "sat1-3": 0.07,
+      "sat1-0": 0.21,
+      "sat2-4": 0.11,
+      "sat2-1": 0.19,
+      "sat2-0": 0.41,
+      "sat0-0": 0.11,
+      "sat0-5": 0.1
+    }
+  },
+  "churn": {
+    "events": 7,
+    "availability": 1.0,
+    "worst_round": 1.0,
+    "samples": 220,
+    "ok": 220,
+    "post_churn_connectivity": {
+      "ok": 552,
+      "total": 552,
+      "rate": 1.0
+    }
+  }
+}

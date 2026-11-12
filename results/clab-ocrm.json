@@ -1,0 +1,168 @@
+{
+  "stack": "ocrm",
+  "started": "2026-07-31 21:25:06",
+  "convergence": {
+    "deploy_s": 34.4,
+    "convergence_s": 4.0,
+    "pair_times": {
+      "sat0-0->sat0-1": 0.3,
+      "sat0-0->sat0-3": 0.5,
+      "sat0-0->sat2-0": 1.0,
+      "sat1-2->sat3-5": 2.7,
+      "sat0-5->sat3-2": 2.9,
+      "sat0-0->sat2-3": 4.0
+    },
+    "unconverged": []
+  },
+  "connectivity": {
+    "ok": 552,
+    "total": 552,
+    "rate": 1.0,
+    "failures": []
+  },
+  "rtt": {
+    "sat0-0->sat0-1": {
+      "avg_ms": 0.051,
+      "max_ms": 0.07
+    },
+    "sat0-0->sat0-3": {
+      "avg_ms": 0.088,
+      "max_ms": 0.196
+    },
+    "sat0-0->sat2-3": {
+      "avg_ms": 0.08,
+      "max_ms": 0.144
+    },
+    "sat1-2->sat3-5": {
+      "avg_ms": 0.093,
+      "max_ms": 0.149
+    }
+  },
+  "overhead": {
+    "window_s": 35.5,
+    "total_bytes": 2820880,
+    "network_Bps": 79368.0,
+    "per_node_Bps": 3307.0
+  },
+  "memory": {
+    "per_node_MiB": {
+      "sat2-3": 12.2,
+      "sat1-4": 12.2,
+      "sat0-4": 12.5,
+      "sat0-5": 12.0,
+      "sat0-0": 12.2,
+      "sat1-1": 12.4,
+      "sat1-0": 11.9,
+      "sat3-5": 12.3,
+      "sat2-1": 12.2,
+      "sat2-5": 12.2,
+      "sat1-5": 12.2,
+      "sat3-3": 12.2,
+      "sat0-2": 12.2,
+      "sat3-2": 12.2,
+      "sat2-2": 11.9,
+      "sat1-3": 12.7,
+      "sat3-1": 11.9,
+      "sat2-0": 12.2,
+      "sat3-4": 11.9,
+      "sat0-1": 12.4,
+      "sat1-2": 12.4,
+      "sat3-0": 12.4,
+      "sat0-3": 12.4,
+      "sat2-4": 12.4
+    },
+    "avg_MiB": 12.2,
+    "max_MiB": 12.7,
+    "sample_node_stats": {
+      "node": "sat0-0",
+      "time": 1785504493.0531948,
+      "adjacency": [
+        "sat0-1",
+        "sat0-5",
+        "sat1-0",
+        "sat3-0"
+      ],
+      "lsdb_size": 24,
+      "fib_routes": 17,
+      "aggregation": true,
+      "cache_size": 2,
+      "cache_aged_out": 0,
+      "rss_mb": 16.21484375,
+      "metrics": {
+        "queries_sent": 0,
+        "queries_received": 0,
+        "queries_satisfied_local": 0,
+        "responses_sent": 0,
+        "responses_received": 0,
+        "routes_learned": 0,
+        "cpa_sent": 120,
+        "cpa_received": 121,
+        "oin_sent": 0,
+        "oin_received": 0,
+        "lsu_sent": 2213,
+        "lsu_received": 2211,
+        "bytes_sent": 366024,
+        "bytes_received": 366456
+      },
+      "cfml": {
+        "installed": 36,
+        "withdrawn": 19,
+        "urgent": 9158
+      }
+    }
+  },
+  "failure": {
+    "blackout_s": 0.2,
+    "lost_pkts": 2,
+    "received": 398,
+    "sent": 400,
+    "restored_after_up": true
+  },
+  "connectivity_after_recovery": {
+    "ok": 552,
+    "total": 552,
+    "rate": 1.0,
+    "failures": []
+  },
+  "fib": {
+    "per_node": {
+      "sat0-0": 17,
+      "sat0-1": 17,
+      "sat0-2": 17,
+      "sat0-3": 17,
+      "sat0-4": 17,
+      "sat0-5": 17,
+      "sat1-0": 11,
+      "sat1-1": 11,
+      "sat1-2": 11,
+      "sat1-3": 11,
+      "sat1-4": 11,
+      "sat1-5": 11,
+      "sat2-0": 11,
+      "sat2-1": 11,
+      "sat2-2": 11,
+      "sat2-3": 11,
+      "sat2-4": 11,
+      "sat2-5": 11,
+      "sat3-0": 8,
+      "sat3-1": 8,
+      "sat3-2": 8,
+      "sat3-3": 8,
+      "sat3-4": 8,
+      "sat3-5": 8
+    },
+    "avg_fib": 11.8,
+    "max_fib": 17,
+    "flat_baseline": 23,
+    "aggregation": true,
+    "lsdb_full": true
+  },
+  "restart": {
+    "victim": "sat1-2",
+    "resync_s": 0.7,
+    "blackout_s": 0.0,
+    "received": 300,
+    "sent": 300,
+    "ok_after": true
+  }
+}

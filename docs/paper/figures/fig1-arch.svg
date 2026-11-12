@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 620" width="860" height="620" font-family="sans-serif" font-size="13" fill="#222">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+    </marker>
+    <marker id="arrowL" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M10,0 L0,5 L10,10 z" fill="#555"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="860" height="620" fill="#ffffff"/>
+
+  <text x="40" y="42" font-size="17" font-weight="bold" fill="#111">图 1  星载路由器数字样机及星座仿真验证系统总体架构</text>
+
+  <!-- 层带 -->
+  <g stroke="#444" stroke-width="1">
+    <rect x="150" y="66"  width="560" height="46"  fill="#fbfbfb" rx="4"/>
+    <rect x="150" y="128" width="560" height="62"  fill="#fbfbfb" rx="4"/>
+    <rect x="150" y="206" width="560" height="46"  fill="#fbfbfb" rx="4"/>
+    <rect x="150" y="268" width="560" height="188" fill="#fbfbfb" rx="4"/>
+    <rect x="150" y="472" width="560" height="54"  fill="#fbfbfb" rx="4"/>
+  </g>
+
+  <g font-weight="bold" font-size="13" fill="#111">
+    <text x="162" y="88">① 配置层</text>
+    <text x="162" y="150">② 生成层</text>
+    <text x="162" y="228">③ 部署层</text>
+    <text x="162" y="290">④ 运行层</text>
+    <text x="162" y="494">⑤ 观测层</text>
+  </g>
+
+  <g font-size="11.5">
+    <text x="242" y="88">config/constellation.yaml：轨道参数 · ISL 速率/建链距离 · 节点类型 · 仿真参数</text>
+    <text x="242" y="150">topogen/：orbit 轨道递推 → isl +Grid 链路 → addressing 编址 → frr/clab 配置生成</text>
+    <text x="242" y="168" fill="#555">（产物：out/links.json 虚拟拓扑 · out/&lt;lab&gt;.clab.yml · frr.conf）</text>
+    <text x="242" y="228">docker/ sat-router 镜像（FRR + BIRD2 + eBPF 多阶段构建）＋ containerlab deploy（每星一容器 · veth 组网）</text>
+  </g>
+
+  <!-- ④ 运行层：两个子模块，每个内部再嵌套子件 -->
+  <g stroke="#888" stroke-width="1">
+    <rect x="170" y="292" width="258" height="150" fill="#f5f8fb" rx="4"/>
+    <rect x="452" y="292" width="248" height="150" fill="#f5f8fb" rx="4"/>
+  </g>
+  <text x="180" y="306" font-size="11" font-weight="bold" fill="#111">每星容器 sat-router（×N）</text>
+  <text x="462" y="306" font-size="11" font-weight="bold" fill="#111">链路动态引擎 dynamics/</text>
+
+  <g stroke="#ccc" stroke-width="1">
+    <rect x="182" y="316" width="234" height="24" fill="#ffffff" rx="3"/>
+    <rect x="182" y="344" width="234" height="24" fill="#ffffff" rx="3"/>
+    <rect x="182" y="372" width="234" height="24" fill="#ffffff" rx="3"/>
+  </g>
+  <g font-size="9.5" fill="#333" text-anchor="middle">
+    <text x="299" y="330">控制面 FRR / BIRD2 / OCRM</text>
+    <text x="299" y="358">统一南向接口 → 内核 IPv6 FIB</text>
+    <text x="299" y="386">eBPF/XDP 转发面（SRv6 End）</text>
+  </g>
+  <g stroke="#555" stroke-width="1" fill="none">
+    <line x1="299" y1="341" x2="299" y2="343" marker-end="url(#arrow)"/>
+    <line x1="299" y1="369" x2="299" y2="371" marker-end="url(#arrow)"/>
+  </g>
+  <text x="182" y="412" font-size="9" fill="#555">ISL 接口 eth1..eth6（veth，挂 XDP）</text>
+
+  <g font-size="9.5" fill="#333">
+    <text x="462" y="326">轨道递推 → 时延/通断</text>
+    <text x="462" y="341">三重判据（极区/视距/距离）</text>
+    <text x="462" y="356">下发 tc netem delay·rate + ip link</text>
+    <text x="462" y="371">link_state.json（原子发布）</text>
+  </g>
+  <text x="462" y="408" font-size="9" fill="#888">→ 与每星容器构成虚实同步闭环</text>
+
+  <line x1="428" y1="360" x2="450" y2="360" stroke="#555" stroke-width="1" marker-start="url(#arrowL)" marker-end="url(#arrow)"/>
+  <text x="438" y="350" font-size="8.5" fill="#666" text-anchor="middle">虚实</text>
+
+  <text x="242" y="494" font-size="11.5">web/：状态 API · BGP 事件流 · 路径实查（ip route get）· Canvas 星座/链路可视化</text>
+
+  <!-- 层间下箭头 -->
+  <g stroke="#555" stroke-width="1" fill="none">
+    <line x1="430" y1="112" x2="430" y2="126" marker-end="url(#arrow)"/>
+    <line x1="430" y1="190" x2="430" y2="204" marker-end="url(#arrow)"/>
+    <line x1="430" y1="252" x2="430" y2="266" marker-end="url(#arrow)"/>
+    <line x1="430" y1="456" x2="430" y2="470" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- 右侧虚实同步纵联（数字孪生闭环） -->
+  <line x1="730" y1="340" x2="730" y2="492" stroke="#555" stroke-width="1" marker-start="url(#arrowL)" marker-end="url(#arrow)"/>
+  <text x="742" y="416" font-size="10" fill="#333" transform="rotate(90 742 416)">虚实路由同步（数字孪生闭环）</text>
+
+  <text x="150" y="560" font-size="10" fill="#555">运行层每星一台容器承载真实路由协议栈与 eBPF 转发面，容器内部按“控制面→内核 FIB→转发面”分层；链路动态引擎将时变虚拟拓扑同步为真实网络状态，观测层读取并可视化。</text>
+</svg>

@@ -1,0 +1,71 @@
+# OCRM vs BGP Comparison Experiment Configuration
+# Walker 4x6 constellation (24 satellites)
+# Used by both OCRM test and BGP baseline test
+
+constellation:
+  name: ocrm-test
+  planes: 4
+  sats_per_plane: 6
+  altitude_km: 550
+  inclination_deg: 53
+  node_type: sat-router
+
+isl:
+  intra_rate: "10gbit"
+  inter_rate: "5gbit"
+  intra_delay_ms: 3.7   # ~1100km intra-plane
+  inter_delay_ms: 5.2   # ~1560km inter-plane
+  pattern: plus_grid
+
+simulation:
+  duration_s: 300
+  link_change_interval_s: 15     # avg ISL handover period
+  link_failure_rate: 0.02        # random failures/node/sec
+  warmup_s: 30
+
+ocrm:
+  kv_cache_entries: 5000
+  t_batch_ms: 50
+  axiom_count: 4
+  d_max: 3
+  t_cfml_s: 2.0
+  query_interval_s: 5     # generate queries every N seconds
+  
+bgp:
+  routing_stack: frr
+  hello_interval_s: 10
+  dead_interval_s: 40
+  mrai_s: 30
+  dampening: true
+
+moqr:
+  # H-OG-MOQR parameters (§3.11)
+  n_pop: 50               # population size (matches ref vector count)
+  g_max: 20              # max generations (cold start)
+  g_warm: 5              # generations with warm-start (R9)
+  k_corridors: 3         # top-k region corridors to refine
+  n_pop_segment: 20      # segment-level population
+  g_segment: 8           # segment generations
+  r_samples: 3           # interval sampling points (R10)
+  epsilon_r: 0.1         # robust dominance threshold
+  rho_min: 0.7           # minimum confidence for strict dominance
+  h_max: 10              # max hop count
+  eta_bias: 0.3          # reference vector task-weight bias (R11)
+  query_interval_s: 10   # MOQR optimization frequency
+
+metrics:
+  sample_interval_s: 1
+  output_dir: results
+
+data_plane:
+  # Point-to-point data transmission over CFML-installed FIBs (§3.9)
+  n_flows: 20          # concurrent src->dst flows, 1 packet/flow/second
+
+scalability:
+  # Constellation scales for --scale-experiment (paper §5.5)
+  scales:
+    - {planes: 4,  sats_per_plane: 6}    # 24 nodes (baseline)
+    - {planes: 6,  sats_per_plane: 12}   # 72 nodes (paper primary)
+    - {planes: 12, sats_per_plane: 24}   # 288 nodes
+    - {planes: 24, sats_per_plane: 30}   # 720 nodes
+    - {planes: 36, sats_per_plane: 44}   # 1584 nodes (Starlink shell-1)

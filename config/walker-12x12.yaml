@@ -1,0 +1,36 @@
+# Walker Delta 星座: 12 轨道面 x 12 卫星 = 144 节点, 单星 4 条 ISL
+# (经典 +Grid: 前/后/左/右各 1, 无斜向链路)
+#
+# 几何参数 (550km / 75° / F=1): 倾角 75° 覆盖到 ±75° 纬度
+#   (加拿大全域含北极群岛, 不覆盖两极)
+#   同轨间距 3583km 恒定(骨干); 异轨 1219~4139km 周期性变化
+#   max_range_km=3700: 同轨余量 117km; 异轨平均在线率约 97%,
+#   仍有少量异轨链路周期性超距断开, 进入范围后自动重建
+constellation:
+  name: sat-12x12
+  planes: 12
+  sats_per_plane: 12
+  altitude_km: 550.0        # Starlink 类低轨
+  inclination_deg: 75.0     # 高倾角: 星下点最高 ±75°, 覆盖加拿大等中高纬度
+  raan_spread_deg: 360.0    # Walker Delta, 轨道面环闭合
+  phase_factor: 1
+  epoch_offset_s: 0.0
+
+isl:
+  rate_mbps: 100
+  links_per_sat: 4          # 单星星间链路数: 4=前/后/左/右各1; 6=另加斜向2条
+  wrap_planes: true         # Delta 构型面环闭合
+  polar_cutoff_lat_deg: 0   # 倾角 75 度无极区(最高±75°), 不启用极区断链
+  los_margin_km: 80
+  max_range_km: 3700        # 最大建链距离: 同轨 3583km 恒定(骨干保留);
+                            # 异轨 1219~4139km, 约 3% 周期性超距断链
+  static_delay_ms: 0
+
+node:
+  kind: linux
+  image: sat-router:latest
+
+simulation:
+  step_seconds: 60          # 每步仿真时间推进 (s), 步间墙钟 = step/speedup
+  speedup: 2.0              # 2 倍速: 仿真时间 = 墙钟 * 2, 每 30s 墙钟步进一次
+  delay_eps_ms: 1.0         # 时延变化小于 1ms 不重发 netem (减少 exec 风暴)

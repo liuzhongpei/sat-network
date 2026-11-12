@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+out-*/
+*.log
+.claude/
+build/
+dist/
+.vscode/
+.idea/

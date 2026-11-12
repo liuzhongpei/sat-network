@@ -1,0 +1,31 @@
+# Walker Delta 星座 4x6 = 24 节点, OSPFv3 (单区域链路状态) 基线
+# 与 walker-4x6.yaml (eBGP) / walker-4x6-ocrm.yaml (OCRM) 同构, 仅协议栈不同
+constellation:
+  name: sat-ospf
+  planes: 4
+  sats_per_plane: 6
+  altitude_km: 1200.0
+  inclination_deg: 53.0
+  raan_spread_deg: 360.0
+  phase_factor: 1
+  epoch_offset_s: 0.0
+
+isl:
+  rate_mbps: 100
+  links_per_sat: 4
+  wrap_planes: true
+  polar_cutoff_lat_deg: 0
+  los_margin_km: 80
+  max_range_km: 9000
+  static_delay_ms: 0
+
+node:
+  kind: linux
+  image: sat-router:latest
+  routing: ospf6            # FRR ospf6d, hello/dead 3/9s 对齐 eBGP timers
+  mgmt_subnet: 172.102.0.0/16   # 与 sat-4x6 / sat-ocrm lab 错开
+
+simulation:
+  step_seconds: 20
+  speedup: 1.0
+  delay_eps_ms: 0.5

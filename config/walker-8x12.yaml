@@ -1,0 +1,30 @@
+# Walker Delta 星座: 8 轨道面 x 12 卫星 = 96 节点, 单星 4 条 ISL
+# (经典 +Grid: 前/后/左/右各 1, 无斜向链路)
+constellation:
+  name: sat-8x12
+  planes: 8
+  sats_per_plane: 12
+  altitude_km: 550.0        # Starlink 类低轨
+  inclination_deg: 53.0
+  raan_spread_deg: 360.0    # Walker Delta, 轨道面环闭合
+  phase_factor: 1
+  epoch_offset_s: 0.0
+
+isl:
+  rate_mbps: 100
+  links_per_sat: 4          # 单星星间链路数: 4=前/后/左/右各1; 6=另加斜向2条
+  wrap_planes: true         # Delta 构型面环闭合
+  polar_cutoff_lat_deg: 0   # 倾角 53 度无极区, 不启用极区断链
+  los_margin_km: 80
+  max_range_km: 5500        # 最大建链距离: 同轨 3583km 恒定(骨干保留);
+                            # 异轨 217~5558km, 赤道附近最长段周期性断链
+  static_delay_ms: 0
+
+node:
+  kind: linux
+  image: sat-router:latest
+
+simulation:
+  step_seconds: 60          # 96 节点规模下加大步长, 降低 docker exec 开销
+  speedup: 1.0
+  delay_eps_ms: 1.0         # 时延变化小于 1ms 不重发 netem (减少 exec 风暴)

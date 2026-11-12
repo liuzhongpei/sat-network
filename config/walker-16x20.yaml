@@ -1,0 +1,37 @@
+# Walker Delta 星座: 16 轨道面 x 20 卫星 = 320 节点, 单星 4 条 ISL
+# (经典 +Grid: 前/后/左/右各 1, 无斜向链路)
+#
+# 几何参数 (550km / 53° / F=1):
+#   同轨间距 2165km 恒定(骨干); 异轨 1758~2783km 周期性变化
+#   max_range_km=3000: 全链路在线(对照实验配置), 动态仅时延变化
+constellation:
+  name: sat-16x20
+  planes: 16
+  sats_per_plane: 20
+  altitude_km: 550.0        # Starlink 类低轨
+  inclination_deg: 53.0
+  raan_spread_deg: 360.0    # Walker Delta, 轨道面环闭合
+  phase_factor: 1
+  epoch_offset_s: 0.0
+
+isl:
+  rate_mbps: 100
+  links_per_sat: 4
+  wrap_planes: true         # Delta 构型面环闭合
+  polar_cutoff_lat_deg: 0   # 倾角 53 度无极区, 不启用极区断链
+  los_margin_km: 80
+  max_range_km: 3000        # 对照实验: 全链路保持在线(异轨最大 2783km),
+                            # 排除链路翻动对转发面的影响; 动态仅体现为时延变化
+  static_delay_ms: 0
+
+node:
+  kind: linux
+  image: sat-router:latest
+  xdp: false                # 320 节点规模: 纯内核转发 + 静态邻居表项
+                            # (XDP redirect 绕过 netem 时延; 大规模下
+                            #  内核链路本地 ND 失效, 见 entrypoint 兜底)
+
+simulation:
+  step_seconds: 60          # 320 节点规模, 与 400 探针相同节奏
+  speedup: 1.0
+  delay_eps_ms: 1.0         # 时延变化小于 1ms 不重发 netem (减少 exec 风暴)

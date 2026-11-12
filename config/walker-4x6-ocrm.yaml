@@ -1,0 +1,31 @@
+# Walker Delta 星座: 4 轨道面 x 6 卫星 = 24 节点, 单星 4 条 ISL (+Grid)
+# OCRM 协议栈版本 — 与 walker-4x6.yaml (FRR eBGP) 同拓扑, 用于对比实验
+constellation:
+  name: sat-ocrm
+  planes: 4
+  sats_per_plane: 6
+  altitude_km: 1200.0
+  inclination_deg: 53.0
+  raan_spread_deg: 360.0
+  phase_factor: 1
+  epoch_offset_s: 0.0
+
+isl:
+  rate_mbps: 100
+  links_per_sat: 4          # 前/后/左/右各 1 (与 BGP 版一致)
+  wrap_planes: true
+  polar_cutoff_lat_deg: 0
+  los_margin_km: 80
+  max_range_km: 9000
+  static_delay_ms: 0
+
+node:
+  kind: linux
+  image: sat-router:latest
+  routing: ocrm             # OCRM 语义路由守护进程 (真实 CFML -> ip -6 route)
+  mgmt_subnet: 172.101.0.0/16   # 与 sat-4x6 lab 错开, 允许并存
+
+simulation:
+  step_seconds: 20
+  speedup: 1.0
+  delay_eps_ms: 0.5

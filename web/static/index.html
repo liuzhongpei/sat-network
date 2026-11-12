@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>卫星网络路由测试系统 - 可视化</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d1117; color: #c9d1d9; font: 13px/1.5 "Segoe UI", "Noto Sans CJK SC", sans-serif;
+         display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  header { display: flex; align-items: center; gap: 18px; padding: 8px 16px;
+           background: #161b22; border-bottom: 1px solid #30363d; flex-wrap: wrap; }
+  header h1 { font-size: 16px; color: #e6edf3; }
+  .badge { padding: 2px 10px; border-radius: 10px; font-size: 12px; background: #21262d; }
+  .badge b { color: #e6edf3; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+  .on  { background: #3fb950; } .off { background: #f85149; }
+  #main { display: flex; flex: 1; min-height: 0; }
+  #mapwrap { flex: 1; position: relative; min-width: 0; }
+  canvas { width: 100%; height: 100%; display: block; }
+  #tooltip { position: absolute; pointer-events: none; background: #1c2128ee; border: 1px solid #30363d;
+             border-radius: 6px; padding: 6px 10px; font-size: 12px; display: none; z-index: 10;
+             white-space: pre; color: #e6edf3; }
+  #side { width: 420px; border-left: 1px solid #30363d; display: flex; flex-direction: column;
+          background: #0d1117; }
+  #tabs { display: flex; border-bottom: 1px solid #30363d; }
+  #tabs div { flex: 1; text-align: center; padding: 8px 0; cursor: pointer; color: #8b949e;
+              border-bottom: 2px solid transparent; user-select: none; }
+  #tabs div.act { color: #e6edf3; border-bottom-color: #58a6ff; background: #161b22; }
+  .pane { flex: 1; overflow-y: auto; display: none; padding: 6px; }
+  .pane.act { display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; color: #8b949e; padding: 3px 6px; position: sticky; top: 0;
+       background: #0d1117; border-bottom: 1px solid #30363d; }
+  td { padding: 3px 6px; border-bottom: 1px solid #21262d; }
+  tr:hover td { background: #161b22; }
+  tr.sel td { background: #1f3a5f; }
+  .up   { color: #3fb950; } .down { color: #f85149; } .part { color: #d29922; }
+  .ev { padding: 4px 8px; border-left: 3px solid #30363d; margin: 3px 0; background: #161b22;
+        border-radius: 0 4px 4px 0; font-size: 12px; }
+  .ev.good { border-left-color: #3fb950; } .ev.warn { border-left-color: #f85149; }
+  .ev.info { border-left-color: #58a6ff; }
+  .ev .tm { color: #8b949e; margin-right: 6px; }
+  .ev .nd { color: #d2a8ff; margin-right: 6px; font-weight: 600; }
+  #detail h3 { color: #e6edf3; font-size: 14px; margin: 6px 4px; }
+  .mono { font-family: ui-monospace, monospace; }
+  .hint { color: #8b949e; padding: 12px; text-align: center; }
+  #path-ctl { display: flex; gap: 6px; align-items: center; padding: 6px 4px; flex-wrap: wrap; }
+  #path-ctl select { background: #161b22; color: #e6edf3; border: 1px solid #30363d;
+                     border-radius: 4px; padding: 3px 6px; font-size: 12px; }
+  #path-ctl button { background: #21262d; color: #e6edf3; border: 1px solid #30363d;
+                     border-radius: 4px; padding: 3px 10px; cursor: pointer; font-size: 12px; }
+  #path-ctl button:hover { background: #30363d; }
+  #path-ctl button.pri { background: #1f6feb; border-color: #1f6feb; }
+  .psum { padding: 6px 8px; margin: 4px 0; background: #161b22; border-radius: 6px; font-size: 12px; }
+  #meas-ctl { display: flex; gap: 6px; align-items: center; padding: 6px 4px; flex-wrap: wrap;
+              border-top: 1px solid #21262d; margin-top: 6px; }
+  #meas-ctl button { background: #21262d; color: #e6edf3; border: 1px solid #30363d;
+                     border-radius: 4px; padding: 3px 10px; cursor: pointer; font-size: 12px; }
+  #meas-ctl button:hover { background: #30363d; }
+  #meas-ctl button:disabled { opacity: .5; cursor: wait; }
+  #meas-ctl select { background: #161b22; color: #e6edf3; border: 1px solid #30363d;
+                     border-radius: 4px; padding: 3px 6px; font-size: 12px; }
+  .mrow { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+  .mrow .kv b { color: #e6edf3; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🛰 卫星网络路由测试系统</h1>
+  <span class="badge" id="b-lab"></span>
+  <span class="badge">仿真时间 <b id="b-time">-</b></span>
+  <span class="badge"><span class="dot off" id="eng-dot"></span><span id="b-eng">引擎离线</span></span>
+  <span class="badge">链路 <b id="b-links">-</b></span>
+  <span class="badge" id="b-range" style="display:none">建链距离 ≤ <b id="b-range-v">-</b> km</span>
+  <span class="badge">BGP 会话 <b id="b-bgp">-</b></span>
+  <span class="badge">速率 <b id="b-rate">-</b></span>
+</header>
+<div id="main">
+  <div id="mapwrap"><canvas id="map"></canvas><div id="tooltip"></div></div>
+  <div id="side">
+    <div id="tabs">
+      <div data-p="p-nodes" class="act">节点 BGP</div>
+      <div data-p="p-links">链路</div>
+      <div data-p="p-events">路由事件</div>
+      <div data-p="p-path">路径</div>
+      <div data-p="p-detail">详情</div>
+    </div>
+    <div class="pane act" id="p-nodes"><table><thead>
+      <tr><th>节点</th><th>会话</th><th>RIB</th><th>Loopback</th></tr>
+      </thead><tbody id="tb-nodes"></tbody></table></div>
+    <div class="pane" id="p-links"><table><thead>
+      <tr><th>链路</th><th>类型</th><th>状态</th><th>时延ms</th><th>距离km</th></tr>
+      </thead><tbody id="tb-links"></tbody></table></div>
+    <div class="pane" id="p-events"><div id="ev-list">
+      <div class="hint">等待路由事件… (会话建立/中断、前缀数变化、RIB 变化)</div>
+    </div></div>
+    <div class="pane" id="p-path">
+      <div id="path-ctl">
+        源 <select id="sel-src"></select>
+        <button id="btn-swap" title="交换">⇄</button>
+        目的 <select id="sel-dst"></select>
+        <button id="btn-path" class="pri">查询路径</button>
+        <button id="btn-clear">清除</button>
+      </div>
+      <div class="hint" style="padding:4px;font-size:11px">地图上 Shift+点击选源, Alt+点击选目的</div>
+      <div id="path-out"></div>
+    </div>
+    <div class="pane" id="p-detail"><div id="detail">
+      <div class="hint">点击地图上的卫星或节点表中的行查看详情</div>
+    </div></div>
+  </div>
+</div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const PLANE_COLORS = ["#58a6ff","#3fb950","#d29922","#f778ba",
+                      "#a371f7","#ff7b72","#79c0ff","#56d364"];
+let META = null, STATE = null, BGP = {nodes:{}, events:[]};
+let lastEvId = 0, selNode = null, hoverSat = null, PATH = null;
+
+/* ---------- tabs ---------- */
+document.querySelectorAll("#tabs div").forEach(t => t.onclick = () => {
+  document.querySelectorAll("#tabs div").forEach(x => x.classList.remove("act"));
+  document.querySelectorAll(".pane").forEach(x => x.classList.remove("act"));
+  t.classList.add("act"); $(t.dataset.p).classList.add("act");
+});
+function showTab(p){ document.querySelector(`#tabs div[data-p="${p}"]`).click(); }
+
+/* ---------- canvas ---------- */
+const cv = $("map"), ctx = cv.getContext("2d");
+function resize(){
+  const r = cv.parentElement.getBoundingClientRect();
+  cv.width = r.width * devicePixelRatio; cv.height = r.height * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  renderBg();
+  draw();
+}
+window.addEventListener("resize", resize);
+const W = () => cv.width / devicePixelRatio, H = () => cv.height / devicePixelRatio;
+const PX = (lon,lat) => [ (lon+180)/360*W(), (90-lat)/180*H() ];
+
+/* ---------- 地形底图 (陆地轮廓预渲染到离屏 canvas) ---------- */
+let WORLD = null, bgCanvas = null;
+async function loadWorld(){
+  try{ WORLD = await jget("/world.json"); renderBg(); draw(); }catch(e){}
+}
+function renderBg(){
+  const w = W(), h = H();
+  if(!w || !h) return;
+  bgCanvas = document.createElement("canvas");
+  bgCanvas.width = w*devicePixelRatio; bgCanvas.height = h*devicePixelRatio;
+  const c = bgCanvas.getContext("2d");
+  c.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  /* 海洋: 深蓝渐变 */
+  const og = c.createLinearGradient(0,0,0,h);
+  og.addColorStop(0,"#0a1830"); og.addColorStop(.5,"#0e2342"); og.addColorStop(1,"#0a1830");
+  c.fillStyle = og; c.fillRect(0,0,w,h);
+  if(!WORLD) return;
+  /* 陆地: 按纬度渐变 (极地灰 - 中纬度绿 - 赤道棕绿), 仿地形色 */
+  const lg = c.createLinearGradient(0,0,0,h);
+  lg.addColorStop(0,"#4a5560"); lg.addColorStop(.22,"#3a5342");
+  lg.addColorStop(.5,"#5a6342"); lg.addColorStop(.78,"#3a5342");
+  lg.addColorStop(1,"#5c6670");
+  c.fillStyle = lg; c.strokeStyle = "rgba(130,170,150,0.35)"; c.lineWidth = .8;
+  for(const poly of WORLD){
+    c.beginPath();
+    for(let i=0;i<poly.length;i++){
+      const [x,y] = PX(poly[i][0], poly[i][1]);
+      i ? c.lineTo(x,y) : c.moveTo(x,y);
+    }
+    c.closePath(); c.fill(); c.stroke();
+  }
+}
+
+function draw(){
+  const w = W(), h = H();
+  ctx.clearRect(0,0,w,h);
+  if(bgCanvas) ctx.drawImage(bgCanvas, 0, 0, w, h);
+  /* 网格 */
+  ctx.strokeStyle = "rgba(255,255,255,0.07)"; ctx.lineWidth = 1; ctx.setLineDash([]);
+  ctx.fillStyle = "#8b949e"; ctx.font = "10px sans-serif";
+  for(let lon=-180; lon<=180; lon+=30){
+    const [x] = PX(lon,0);
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+    ctx.fillText(lon+"°", x+2, h-4);
+  }
+  for(let lat=-60; lat<=60; lat+=30){
+    const [,y] = PX(0,lat);
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+    ctx.fillText(lat+"°", 2, y-2);
+  }
+  /* 赤道加亮 + 极区断链纬度 */
+  ctx.strokeStyle = "rgba(255,255,255,0.12)";
+  ctx.beginPath(); ctx.moveTo(0,PX(0,0)[1]); ctx.lineTo(w,PX(0,0)[1]); ctx.stroke();
+  if(STATE && STATE.polar_cutoff > 0){
+    ctx.strokeStyle = "#f8514966"; ctx.setLineDash([6,6]);
+    for(const lat of [STATE.polar_cutoff, -STATE.polar_cutoff]){
+      const [,y] = PX(0,lat);
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  }
+  if(!STATE) return;
+  /* 轨道面星下点轨迹 (虚线, 按轨道面配色, 跨 180° 断开) */
+  if(STATE.tracks){
+    ctx.lineWidth = 1.4; ctx.setLineDash([2,5]);
+    STATE.tracks.forEach((tr, p) => {
+      ctx.strokeStyle = PLANE_COLORS[p % PLANE_COLORS.length] + "CC";
+      ctx.beginPath();
+      let prev = null;
+      for(const [lat,lon] of tr){
+        if(prev !== null && Math.abs(lon-prev) > 180){
+          ctx.stroke(); ctx.beginPath(); prev = null;
+        }
+        const [x,y] = PX(lon,lat);
+        prev === null ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+        prev = lon;
+      }
+      ctx.stroke();
+    });
+    ctx.setLineDash([]);
+  }
+  /* 链路 (处理经度跨 180° 环绕) */
+  for(const lk of STATE.links){
+    const A = STATE.sats[lk.a], B = STATE.sats[lk.b];
+    if(!A || !B) continue;
+    ctx.strokeStyle = lk.up ? (lk.type==="intra" ? "#3fb95044" : "#58a6ff44")
+                            : "#f8514933";
+    ctx.setLineDash(lk.up ? [] : [4,4]);
+    ctx.lineWidth = lk.up ? 1.1 : 1;
+    let lon1=A.lon, lon2=B.lon;
+    if(Math.abs(lon1-lon2) > 180){          // 环绕: 拆两段画
+      const s = lon1 < lon2 ? 360 : -360;
+      seg(lon1, A.lat, lon2 + (lon1<lon2?-360:360), B.lat);
+      seg(lon1 + s, A.lat, lon2, B.lat);
+    } else seg(lon1, A.lat, lon2, B.lat);
+  }
+  ctx.setLineDash([]);
+  /* 转发路径高亮 */
+  if(PATH && PATH.path && PATH.path.length > 1){
+    ctx.strokeStyle = "#ffd33dcc"; ctx.lineWidth = 3; ctx.setLineDash([]);
+    for(let i=0; i<PATH.path.length-1; i++){
+      const A = STATE.sats[PATH.path[i]], B = STATE.sats[PATH.path[i+1]];
+      if(!A || !B) continue;
+      if(Math.abs(A.lon-B.lon) > 180){
+        const s = A.lon < B.lon ? 360 : -360;
+        seg(A.lon, A.lat, B.lon + (A.lon<B.lon?-360:360), B.lat);
+        seg(A.lon + s, A.lat, B.lon, B.lat);
+      } else seg(A.lon, A.lat, B.lon, B.lat);
+    }
+    ctx.lineWidth = 1;
+  }
+  /* 卫星 */
+  for(const [name, sp] of Object.entries(STATE.sats)){
+    const [x,y] = PX(sp.lon, sp.lat);
+    const bg = BGP.nodes[name];
+    ctx.beginPath(); ctx.arc(x,y,5.5,0,7);
+    ctx.fillStyle = PLANE_COLORS[sp.plane % PLANE_COLORS.length];
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = !bg || !bg.ok ? "#484f58"
+      : bg.est===bg.total ? "#3fb950" : bg.est>0 ? "#d29922" : "#f85149";
+    ctx.stroke();
+    if(name === selNode){
+      ctx.beginPath(); ctx.arc(x,y,9,0,7);
+      ctx.strokeStyle = "#e6edf3"; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    ctx.fillStyle = "#c9d1d9"; ctx.font = "10px sans-serif";
+    ctx.fillText(name, x+7, y+3);
+  }
+  /* 路径源/目的标记 */
+  if(PATH && STATE.sats[PATH.src] && STATE.sats[PATH.dst]){
+    for(const [nd, col, tag] of [[PATH.src,"#3fb950","S"],[PATH.dst,"#f85149","D"]]){
+      const sp = STATE.sats[nd], [x,y] = PX(sp.lon, sp.lat);
+      ctx.beginPath(); ctx.arc(x,y,10,0,7);
+      ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.fillStyle = col; ctx.font = "bold 11px sans-serif";
+      ctx.fillText(tag, x-14, y-8);
+    }
+    ctx.lineWidth = 1;
+  }
+  function seg(o1,a1,o2,a2){
+    const [x1,y1]=PX(o1,a1), [x2,y2]=PX(o2,a2);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  }
+}
+
+/* ---------- 鼠标交互 ---------- */
+function satAt(mx,my){
+  if(!STATE) return null;
+  let best=null, bd=144;
+  for(const [name,sp] of Object.entries(STATE.sats)){
+    const [x,y]=PX(sp.lon,sp.lat), d=(x-mx)**2+(y-my)**2;
+    if(d<bd){ bd=d; best=name; }
+  }
+  return best;
+}
+cv.addEventListener("mousemove", e => {
+  const r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+  hoverSat = satAt(mx,my);
+  const tip = $("tooltip");
+  if(hoverSat){
+    const sp=STATE.sats[hoverSat], bg=BGP.nodes[hoverSat];
+    tip.textContent = `${hoverSat}\n纬度 ${sp.lat}°  经度 ${sp.lon}°`
+      + (bg && bg.ok ? `\nBGP ${bg.est}/${bg.total} Established\nRIB ${bg.rib} 条` : "\nBGP 无数据");
+    tip.style.left=(mx+14)+"px"; tip.style.top=(my+8)+"px"; tip.style.display="block";
+    cv.style.cursor="pointer";
+  } else { tip.style.display="none"; cv.style.cursor="default"; }
+});
+cv.addEventListener("click", e => {
+  if(!hoverSat) return;
+  if(e.shiftKey){ $("sel-src").value = hoverSat; showTab("p-path"); return; }
+  if(e.altKey){ $("sel-dst").value = hoverSat; showTab("p-path"); return; }
+  selectNode(hoverSat);
+});
+
+/* ---------- 转发路径查询 ---------- */
+async function queryPath(){
+  const src = $("sel-src").value, dst = $("sel-dst").value;
+  if(src === dst){ $("path-out").innerHTML = `<div class="hint">源与目的不能相同</div>`; return; }
+  $("path-out").innerHTML = `<div class="hint">逐跳查询中…</div>`;
+  try{
+    const d = await jget(`/api/path?src=${src}&dst=${dst}`);
+    if(d.error){ $("path-out").innerHTML = `<div class="hint">${d.error}</div>`; return; }
+    PATH = d; draw();
+    /* 估算单向时延: 逐段匹配当前链路表 */
+    let delay = 0, miss = false;
+    for(let i=0; i<d.path.length-1; i++){
+      const lk = (STATE ? STATE.links : []).find(l =>
+        (l.a===d.path[i] && l.b===d.path[i+1]) || (l.a===d.path[i+1] && l.b===d.path[i]));
+      if(lk) delay += lk.delay_ms; else miss = true;
+    }
+    let html = `<div class="psum">${d.reached
+        ? `<span class="up">✔ 可达</span> 共 <b>${d.hops.length}</b> 跳`
+          + (miss ? "" : `，传播时延约 <b>${delay.toFixed(1)}</b> ms（单向）`)
+        : `<span class="down">✖ 不可达</span> ${d.reason}`}
+      <br>目标地址 <span class="mono">${d.dst_addr}</span></div>`;
+    html += `<table><thead><tr><th>#</th><th>节点</th><th>出接口</th><th>下一跳</th></tr></thead><tbody>`;
+    d.hops.forEach((h,i) => {
+      html += `<tr><td>${i+1}</td><td class="mono">${h.node}</td>`
+        + `<td class="mono">${h.dev||"-"}</td>`
+        + `<td class="mono">${h.next||"?"} <span style="color:#8b949e">${h.via}</span></td></tr>`;
+    });
+    if(d.reached) html += `<tr><td>${d.hops.length+1}</td><td class="mono">${d.dst}</td>`
+      + `<td>-</td><td><span class="up">目的节点</span></td></tr>`;
+    html += "</tbody></table>";
+    /* 可达时提供延迟/带宽实测入口 (沿当前转发路径端到端测量) */
+    if(d.reached){
+      html += `<div id="meas-ctl">
+        <button id="btn-ping">测延迟 ping</button>
+        <button id="btn-bw">测带宽 iperf3</button>
+        <select id="sel-secs"><option value="5">5s</option>
+          <option value="10">10s</option><option value="20">20s</option></select>
+      </div><div id="meas-out"></div>`;
+    }
+    $("path-out").innerHTML = html;
+    if(d.reached){
+      $("btn-ping").onclick = () => runMeasure(d.src, d.dst, "ping");
+      $("btn-bw").onclick  = () => runMeasure(d.src, d.dst, "bw");
+    }
+  }catch(e){
+    $("path-out").innerHTML = `<div class="hint">查询失败: ${e}</div>`;
+  }
+}
+
+/* ---------- 路径延迟/带宽实测 ---------- */
+async function runMeasure(src, dst, kind){
+  const box = $("meas-out");
+  if(!box) return;
+  const btns = [$("btn-ping"), $("btn-bw")];
+  btns.forEach(b => b && (b.disabled = true));
+  const secs = $("sel-secs") ? $("sel-secs").value : 5;
+  box.innerHTML = `<div class="hint">${kind === "ping"
+    ? "ping 测量中 (10 包)…" : `iperf3 测量中 (${secs}s, 首次需安装稍慢)…`}</div>`;
+  try{
+    const d = await jget(`/api/measure?src=${src}&dst=${dst}&kind=${kind}&secs=${secs}`);
+    if(d.error){ box.innerHTML = `<div class="psum down">✖ ${d.error}</div>`; return; }
+    if(d.kind === "ping"){
+      const lossCls = d.loss_pct > 0 ? "down" : "up";
+      box.innerHTML = `<div class="psum"><b>延迟实测</b> ${src} → ${dst}
+        <div class="mrow">
+          <span class="kv">RTT 均值 <b>${d.rtt_avg ?? "-"}</b> ms</span>
+          <span class="kv">最小/最大 <b>${d.rtt_min ?? "-"}/${d.rtt_max ?? "-"}</b> ms</span>
+          <span class="kv">抖动 <b>${d.rtt_mdev ?? "-"}</b> ms</span>
+          <span class="kv">丢包 <b class="${lossCls}">${d.loss_pct}%</b> (${d.recv}/${d.sent})</span>
+        </div></div>`;
+    }else{
+      const util = d.rate_mbps ? ` (链路限速 ${d.rate_mbps} Mbps, 利用率 ${
+        Math.round(d.mbps_recv / d.rate_mbps * 100)}%)` : "";
+      box.innerHTML = `<div class="psum"><b>带宽实测</b> ${src} → ${dst} (TCP ${d.secs}s)
+        <div class="mrow">
+          <span class="kv">发送 <b>${d.mbps_send}</b> Mbps</span>
+          <span class="kv">接收 <b>${d.mbps_recv}</b> Mbps${util}</span>
+          <span class="kv">重传 <b>${d.retrans}</b></span>
+        </div></div>`;
+    }
+  }catch(e){
+    box.innerHTML = `<div class="psum down">✖ 测量失败: ${e}</div>`;
+  }finally{
+    btns.forEach(b => b && (b.disabled = false));
+  }
+}
+$("btn-path").onclick = queryPath;
+$("btn-clear").onclick = () => { PATH = null; $("path-out").innerHTML = ""; draw(); };
+$("btn-swap").onclick = () => {
+  const a = $("sel-src").value; $("sel-src").value = $("sel-dst").value; $("sel-dst").value = a;
+};
+
+/* ---------- 数据轮询 ---------- */
+async function jget(u){ const r = await fetch(u); return r.json(); }
+async function pollState(){
+  try{
+    STATE = await jget("/api/state");
+    $("b-time").textContent = fmtT(STATE.t_sim) + (STATE.speedup!==1 ? ` (${STATE.speedup}x)` : "");
+    $("b-eng").textContent = STATE.engine ? "动态引擎在线" : "引擎离线(几何预测)";
+    $("eng-dot").className = "dot " + (STATE.engine ? "on" : "off");
+    const up = STATE.links.filter(l=>l.up).length;
+    $("b-links").textContent = `${up} up / ${STATE.links.length-up} down`;
+    if(STATE.max_range_km > 0){
+      $("b-range").style.display = "";
+      $("b-range-v").textContent = STATE.max_range_km;
+    } else $("b-range").style.display = "none";
+    $("b-rate").textContent = STATE.rate_mbps + " Mbps";
+    renderLinks(); draw();
+  }catch(e){}
+}
+async function pollBgp(){
+  try{
+    const d = await jget("/api/bgp?since="+lastEvId);
+    BGP.nodes = d.nodes;
+    if(d.events.length){
+      lastEvId = d.events[d.events.length-1].id;
+      addEvents(d.events);
+    }
+    let est=0, tot=0;
+    for(const n of Object.values(d.nodes)){ est+=n.est; tot+=n.total; }
+    $("b-bgp").textContent = `${est}/${tot}`;
+    renderNodes(); draw();
+  }catch(e){}
+}
+function fmtT(s){
+  s=Math.floor(s);
+  return `${Math.floor(s/3600)}:${String(Math.floor(s/60)%60).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+}
+
+/* ---------- 表格渲染 ---------- */
+function renderNodes(){
+  if(!META) return;
+  const rows = META.nodes.map(n => {
+    const b = BGP.nodes[n.name];
+    const cls = !b || !b.ok ? "down" : b.est===b.total ? "up" : b.est>0 ? "part" : "down";
+    const txt = !b || !b.ok ? "无数据" : `${b.est}/${b.total}`;
+    return `<tr class="${n.name===selNode?"sel":""}" onclick="selectNode('${n.name}')">`
+      + `<td class="mono">${n.name}</td><td class="${cls}">${txt}</td>`
+      + `<td>${b&&b.ok?b.rib:"-"}</td><td class="mono">${n.loopback.replace("/128","")}</td></tr>`;
+  });
+  $("tb-nodes").innerHTML = rows.join("");
+}
+function renderLinks(){
+  if(!STATE) return;
+  const rows = STATE.links.map(l =>
+    `<tr><td class="mono">${l.a} ↔ ${l.b}</td><td>${l.type==="intra"?"同轨":"异轨"}</td>`
+    + `<td class="${l.up?"up":"down"}">${l.up?"UP":"DOWN"}</td>`
+    + `<td>${l.delay_ms.toFixed(2)}</td><td>${l.distance_km}</td></tr>`);
+  $("tb-links").innerHTML = rows.join("");
+}
+function addEvents(evs){
+  const box = $("ev-list");
+  if(box.firstElementChild && box.firstElementChild.className==="hint")
+    box.innerHTML = "";
+  for(const e of evs){
+    const d = new Date(e.t*1000);
+    const tm = `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+    const div = document.createElement("div");
+    div.className = "ev " + e.level;
+    div.innerHTML = `<span class="tm">${tm}</span><span class="nd">${e.node}</span>${e.msg}`;
+    box.prepend(div);
+  }
+  while(box.children.length > 300) box.lastChild.remove();
+}
+
+/* ---------- 节点详情 ---------- */
+async function selectNode(name){
+  selNode = name; renderNodes(); draw(); showTab("p-detail");
+  $("detail").innerHTML = `<div class="hint">加载 ${name} 详情…</div>`;
+  try{
+    const d = await jget("/api/bgp/"+name);
+    if(selNode !== name) return;
+    const meta = META.nodes.find(n=>n.name===name);
+    let html = `<h3>${name} <span class="mono" style="color:#8b949e">AS${meta.asn}</span></h3>`
+      + `<div style="padding:0 4px 6px" class="mono">Loopback ${meta.loopback} · Locator ${meta.locator}</div>`
+      + `<h3>BGP 邻居</h3><table><thead><tr><th>邻居</th><th>互联地址</th><th>状态</th><th>前缀</th><th>Uptime</th></tr></thead><tbody>`;
+    for(const [addr,p] of Object.entries(d.peers)){
+      const cls = p.state==="Established"?"up":"down";
+      html += `<tr><td>${p.peer}</td><td class="mono">${addr}</td>`
+        + `<td class="${cls}">${p.state}</td><td>${p.pfxRcd}</td><td>${p.uptime}</td></tr>`;
+    }
+    html += `</tbody></table><h3>IPv6 BGP 路由 (${d.routes.length} 前缀)</h3>`
+      + `<table><thead><tr><th>前缀</th><th>路径</th><th>下一跳(经)</th></tr></thead><tbody>`;
+    for(const r of d.routes){
+      html += `<tr><td class="mono">${r.prefix}</td><td>${r.paths}</td>`
+        + `<td>${r.nexthops.join(", ")}</td></tr>`;
+    }
+    $("detail").innerHTML = html + "</tbody></table>";
+  }catch(e){
+    $("detail").innerHTML = `<div class="hint">加载失败: ${e}</div>`;
+  }
+}
+window.selectNode = selectNode;
+
+/* ---------- 启动 ---------- */
+(async () => {
+  META = await jget("/api/meta");
+  $("b-lab").innerHTML = `<b>${META.lab}</b> · ${META.planes}×${META.sats_per_plane}`
+    + ` · ${META.altitude_km}km · 周期${META.period_min}min`;
+  resize();
+  loadWorld();
+  /* 路径选择下拉框 */
+  const opts = META.nodes.map(n => `<option>${n.name}</option>`).join("");
+  $("sel-src").innerHTML = opts; $("sel-dst").innerHTML = opts;
+  if(META.nodes.length > 1) $("sel-dst").selectedIndex = META.nodes.length - 1;
+  pollState(); pollBgp();
+  setInterval(pollState, 2000);
+  setInterval(pollBgp, 3000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# 卫星星座与测试系统配置
+# 修改后重新执行 topogen/generate.py 生成 containerlab 拓扑与 FRR 配置
+
+constellation:
+  name: leo-demo            # lab 名称 (containerlab lab name)
+  # 默认为铱星构型 (Walker Star 66 星): 异轨 ISL 几何上全程可行
+  # 注意: 星座过稀/轨道面过少会导致星间连线被地球遮挡而断链
+  planes: 6                 # 轨道面数量 P
+  sats_per_plane: 11        # 每轨道面卫星数 N (总节点数 = P*N)
+  altitude_km: 780.0        # 轨道高度 (km, 圆轨道)
+  inclination_deg: 86.4     # 轨道倾角 (deg)
+  raan_spread_deg: 180.0    # RAAN 分布范围: 360=Walker Delta, 180=Walker Star
+  phase_factor: 1           # Walker 相位因子 F (相邻轨道面相位偏移 = F*360/(P*N) deg)
+  epoch_offset_s: 0.0       # 初始时刻偏移 (s)
+
+isl:
+  # 每颗卫星 6 条星间链路: 前向1(eth1) 后向1(eth2) 左向2(eth3,eth4) 右向2(eth5,eth6)
+  rate_mbps: 100            # 星间链路速率 (Mbps), 由 tc netem rate 实施
+  wrap_planes: false        # 是否闭合轨道面环 (Walker Delta=true; Star 存在缝隙面建议 false)
+  polar_cutoff_lat_deg: 66  # 纬度高于该值时关闭异轨(左/右向)链路; <=0 表示不关闭
+  los_margin_km: 80         # 视距判断余量: 连线离地高度低于该值视为被地球遮挡
+  max_range_km: 5500        # 最大建链距离 (km): 星间距离超出时断链, <=0 表示不限制
+  static_delay_ms: 0        # 附加固定时延 (ms), 叠加在传播时延上
+
+node:
+  kind: linux               # linux = sat-router 镜像(FRR+eBPF 转发面); sonic-vs = SONiC 虚拟交换机(仅控制面)
+  image: sat-router:latest  # kind=sonic-vs 时改为 docker-sonic-vs:latest
+
+simulation:
+  step_seconds: 10          # 链路动态引擎更新周期 (仿真时间步长, s)
+  speedup: 1.0              # 时间加速倍数 (仿真时间 = 墙钟时间 * speedup)

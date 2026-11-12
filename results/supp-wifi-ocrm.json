@@ -1,0 +1,45 @@
+{
+  "env": "wifi-ocrm",
+  "started": "2026-07-31 22:30:40",
+  "stretch": {
+    "pairs": 240,
+    "measured": 240,
+    "unreachable": 0,
+    "avg_stretch": 1.0,
+    "max_stretch": 1.0,
+    "optimal_pairs_pct": 100.0,
+    "sub_optimal_anomaly": 0,
+    "worst_pairs": [],
+    "loop_free": true
+  },
+  "throughput": {
+    "sat0-0->sat0-1": {
+      "mbps": 22109.9
+    },
+    "sat0-0->sat0-15": {
+      "mbps": 16130.5
+    }
+  },
+  "cpu": {
+    "avg_pct": 0.78,
+    "max_pct": 1.94,
+    "per_node": {
+      "sat0-2": 0.93,
+      "sat0-7": 1.0,
+      "sat0-15": 1.5,
+      "sat0-11": 1.94,
+      "sat0-14": 0.62,
+      "sat0-4": 0.91,
+      "sat0-0": 1.3,
+      "sat0-3": 0.35,
+      "sat0-1": 0.52,
+      "sat0-6": 0.65,
+      "sat0-5": 0.39,
+      "sat0-13": 0.74,
+      "sat0-8": 0.4,
+      "sat0-12": 0.62,
+      "sat0-9": 0.4,
+      "sat0-10": 0.25
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "comparison_metrics": {
+    "convergence_time_ms": {
+      "OCRM": 553.1,
+      "BGP": 48214.3,
+      "improvement_%": 98.9,
+      "paper_claim_%": 74.2
+    },
+    "path_stability_index": {
+      "OCRM": 0.214,
+      "BGP": 0.169,
+      "improvement_%": 26.6,
+      "paper_claim_%": 63.8
+    },
+    "routing_overhead_%": {
+      "OCRM": 0.03,
+      "BGP": 0.12,
+      "improvement_%": 75.0
+    },
+    "local_reasoning_ratio": {
+      "OCRM": 0.78,
+      "BGP": 0.0,
+      "paper_claim": 0.821
+    },
+    "avg_memory_mb": {
+      "OCRM": 48.1,
+      "BGP": 50.0
+    },
+    "packet_delivery_ratio": {
+      "OCRM": 0.9935,
+      "BGP": 0.8146,
+      "improvement_%": 22.0
+    },
+    "avg_e2e_delay_ms": {
+      "OCRM": 13.48,
+      "BGP": 11.03
+    },
+    "moqr_optimization_latency_ms": {
+      "value": 30.83,
+      "paper_cold_target_ms": 45,
+      "paper_warm_target_ms": 15
+    }
+  },
+  "test_parameters": {
+    "constellation": "4x6 Walker (24 nodes)",
+    "duration_s": 300,
+    "link_events_total": 362
+  },
+  "moqr_metrics": {
+    "optimizations": 27,
+    "avg_latency_ms": 30.83,
+    "avg_pareto_size": 12,
+    "warm_start_ratio": 0.963,
+    "qos_satisfaction_rate": 0.444,
+    "avg_topsis_score": 0.538,
+    "objectives": {
+      "avg_delay_ms": 12.11,
+      "avg_bandwidth_mbps": 2777.8,
+      "avg_compute_ratio": 2.911,
+      "avg_lifetime_s": 120.0,
+      "avg_energy_j": 3.11
+    }
+  }
+}

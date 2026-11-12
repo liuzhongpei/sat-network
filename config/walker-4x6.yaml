@@ -1,0 +1,30 @@
+# Walker Delta 星座: 4 轨道面 x 6 卫星 = 24 节点, 单星 4 条 ISL (+Grid)
+constellation:
+  name: sat-4x6
+  planes: 4
+  sats_per_plane: 6
+  altitude_km: 1200.0       # 每面 6 星(相邻 60°), 60° 弦近地点 r*cos30-6371
+                            # 需 >80km => 高度≥1079km; 1200km 时同轨 LOS 恒通
+  inclination_deg: 53.0
+  raan_spread_deg: 360.0    # Walker Delta, 轨道面环闭合
+  phase_factor: 1
+  epoch_offset_s: 0.0
+
+isl:
+  rate_mbps: 100
+  links_per_sat: 4          # 前/后/左/右各 1
+  wrap_planes: true
+  polar_cutoff_lat_deg: 0   # 倾角 53 度无极区
+  los_margin_km: 80
+  max_range_km: 9000        # 最大建链距离: 同轨 7571km 恒定(骨干保留);
+                            # 异轨 1856~11565km, 约半数超限周期性断链
+  static_delay_ms: 0
+
+node:
+  kind: linux
+  image: sat-router:latest
+
+simulation:
+  step_seconds: 20          # 24 节点, 步长适中
+  speedup: 1.0
+  delay_eps_ms: 0.5

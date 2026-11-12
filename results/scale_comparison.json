@@ -1,0 +1,166 @@
+{
+  "description": "OCRM vs BGP across constellation scales (paper \u00a75.5 metrics)",
+  "paper_reference": {
+    "convergence_reduction_claim_%": 74.2,
+    "psi_improvement_claim_%": 63.8,
+    "local_reasoning_claim": 0.821,
+    "crossover_nodes": 150
+  },
+  "scales": [
+    {
+      "planes": 4,
+      "sats_per_plane": 6,
+      "nodes": 24,
+      "link_events": 181,
+      "ocrm": {
+        "convergence_ms": 553.1,
+        "p95_convergence_ms": 0,
+        "psi": 0.214,
+        "overhead_percent": 0.03,
+        "memory_mb": 48.1,
+        "local_reasoning_ratio": 0.78,
+        "delivery_ratio": 0.9935,
+        "avg_e2e_delay_ms": 13.48
+      },
+      "bgp": {
+        "convergence_ms": 48214.3,
+        "p95_convergence_ms": 0,
+        "psi": 0.169,
+        "overhead_percent": 0.12,
+        "memory_mb": 50.0,
+        "delivery_ratio": 0.8146,
+        "avg_e2e_delay_ms": 11.03
+      },
+      "improvement_%": {
+        "convergence": 98.9,
+        "psi": 26.6,
+        "overhead": 75.0
+      },
+      "wall_time_s": 0.0
+    },
+    {
+      "planes": 6,
+      "sats_per_plane": 12,
+      "nodes": 72,
+      "link_events": 494,
+      "ocrm": {
+        "convergence_ms": 571.9,
+        "p95_convergence_ms": 0,
+        "psi": 0.134,
+        "overhead_percent": 0.05,
+        "memory_mb": 96.1,
+        "local_reasoning_ratio": 0.838,
+        "delivery_ratio": 0.9837,
+        "avg_e2e_delay_ms": 23.13
+      },
+      "bgp": {
+        "convergence_ms": 60876.7,
+        "p95_convergence_ms": 0,
+        "psi": 0.1,
+        "overhead_percent": 0.38,
+        "memory_mb": 135.6,
+        "delivery_ratio": 0.7869,
+        "avg_e2e_delay_ms": 20.22
+      },
+      "improvement_%": {
+        "convergence": 99.1,
+        "psi": 34.0,
+        "overhead": 86.8
+      },
+      "wall_time_s": 0.1
+    },
+    {
+      "planes": 12,
+      "sats_per_plane": 24,
+      "nodes": 288,
+      "link_events": 2013,
+      "ocrm": {
+        "convergence_ms": 622.7,
+        "p95_convergence_ms": 0,
+        "psi": 0.081,
+        "overhead_percent": 0.1,
+        "memory_mb": 230.3,
+        "local_reasoning_ratio": 0.844,
+        "delivery_ratio": 0.9713,
+        "avg_e2e_delay_ms": 46.99
+      },
+      "bgp": {
+        "convergence_ms": 91541.5,
+        "p95_convergence_ms": 0,
+        "psi": 0.077,
+        "overhead_percent": 1.52,
+        "memory_mb": 463.0,
+        "delivery_ratio": 0.5531,
+        "avg_e2e_delay_ms": 36.33
+      },
+      "improvement_%": {
+        "convergence": 99.3,
+        "psi": 5.2,
+        "overhead": 93.4
+      },
+      "wall_time_s": 0.5
+    },
+    {
+      "planes": 24,
+      "sats_per_plane": 30,
+      "nodes": 720,
+      "link_events": 5018,
+      "ocrm": {
+        "convergence_ms": 687.0,
+        "p95_convergence_ms": 0,
+        "psi": 0.078,
+        "overhead_percent": 0.16,
+        "memory_mb": 409.6,
+        "local_reasoning_ratio": 0.818,
+        "delivery_ratio": 0.9643,
+        "avg_e2e_delay_ms": 59.33
+      },
+      "bgp": {
+        "convergence_ms": 120898.1,
+        "p95_convergence_ms": 0,
+        "psi": 0.068,
+        "overhead_percent": 3.79,
+        "memory_mb": 1052.1,
+        "delivery_ratio": 0.5381,
+        "avg_e2e_delay_ms": 46.65
+      },
+      "improvement_%": {
+        "convergence": 99.4,
+        "psi": 14.7,
+        "overhead": 95.8
+      },
+      "wall_time_s": 1.1
+    },
+    {
+      "planes": 36,
+      "sats_per_plane": 44,
+      "nodes": 1584,
+      "link_events": 11022,
+      "ocrm": {
+        "convergence_ms": 742.4,
+        "p95_convergence_ms": 0,
+        "psi": 0.069,
+        "overhead_percent": 0.25,
+        "memory_mb": 674.8,
+        "local_reasoning_ratio": 0.818,
+        "delivery_ratio": 0.9593,
+        "avg_e2e_delay_ms": 77.14
+      },
+      "bgp": {
+        "convergence_ms": 164932.7,
+        "p95_convergence_ms": 0,
+        "psi": 0.061,
+        "overhead_percent": 8.28,
+        "memory_mb": 2173.2,
+        "delivery_ratio": 0.4206,
+        "avg_e2e_delay_ms": 58.96
+      },
+      "improvement_%": {
+        "convergence": 99.5,
+        "psi": 13.1,
+        "overhead": 97.0
+      },
+      "wall_time_s": 2.4
+    }
+  ]
+}

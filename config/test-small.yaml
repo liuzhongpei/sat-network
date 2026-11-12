@@ -1,0 +1,28 @@
+# 小规模测试星座: 4 轨道面 x 6 卫星 = 24 节点
+# 轨道抬高到 1200km: 稀疏星座下保证星间连线不被地球遮挡
+constellation:
+  name: sat-test
+  planes: 4
+  sats_per_plane: 6
+  altitude_km: 1200.0
+  inclination_deg: 86.4
+  raan_spread_deg: 180.0    # Walker Star
+  phase_factor: 1
+  epoch_offset_s: 0.0
+
+isl:
+  rate_mbps: 50
+  wrap_planes: false
+  polar_cutoff_lat_deg: 66
+  los_margin_km: 80
+  max_range_km: 7600        # 最大建链距离: 需大于同轨间距 7571km 以保留骨干;
+                            # 异轨 2187~7656km, 赤道附近超限段落将周期性断链
+  static_delay_ms: 0
+
+node:
+  kind: linux
+  image: sat-router:latest
+
+simulation:
+  step_seconds: 10
+  speedup: 1.0

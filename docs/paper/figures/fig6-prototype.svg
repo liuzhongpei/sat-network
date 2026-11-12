@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 520" width="820" height="520" font-family="sans-serif" font-size="13" fill="#222">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="820" height="520" fill="#ffffff"/>
+
+  <text x="40" y="42" font-size="17" font-weight="bold" fill="#111">图 6  原型系统实现：转发面（eBPF）/ 控制面（容器）/ 虚实同步 / 模拟器</text>
+
+  <!-- 左侧单星容器 -->
+  <g stroke="#444" stroke-width="1">
+    <rect x="36" y="78" width="224" height="268" fill="#fbfbfb" rx="4"/>
+  </g>
+  <text x="48" y="100" font-size="11.5" font-weight="bold" fill="#111">单个星载路由器容器（sat-router）</text>
+  <g stroke="#444" stroke-width="1" fill="#ffffff">
+    <rect x="48" y="112" width="200" height="34" rx="4"/>
+    <rect x="48" y="158" width="200" height="34" rx="4"/>
+    <rect x="48" y="204" width="200" height="44" rx="4"/>
+    <rect x="48" y="260" width="200" height="34" rx="4"/>
+  </g>
+  <g font-size="10.5" text-anchor="middle" fill="#333">
+    <text x="148" y="133">控制面：FRR bgpd（BGP/OSPF）</text>
+    <text x="148" y="179">内核 IPv6 FIB（zebra 下发）</text>
+    <text x="148" y="222">eBPF/XDP 转发面</text>
+    <text x="148" y="238">（IPv6 快转 + SRv6 End）</text>
+    <text x="148" y="281">ISL 接口 eth1..eth6（veth）</text>
+  </g>
+  <g stroke="#555" stroke-width="1" fill="none">
+    <line x1="148" y1="146" x2="148" y2="156" marker-end="url(#arrow)"/>
+    <line x1="148" y1="192" x2="148" y2="202" marker-end="url(#arrow)"/>
+    <line x1="148" y1="248" x2="148" y2="258" marker-end="url(#arrow)"/>
+  </g>
+  <text x="48" y="326" font-size="9.5" fill="#888">eBPF 统计 map → 观测层（数据平面遥测）</text>
+  <text x="48" y="340" font-size="9.5" fill="#888">ROUTING: frr | bird2 | ocrm 三选一</text>
+
+  <!-- 星座 -->
+  <text x="388" y="72" font-size="12" font-weight="bold" fill="#111" text-anchor="middle">星载路由器星座（每星一容器）</text>
+  <g stroke="#555" stroke-width="0.8" fill="none">
+    <line x1="390" y1="120" x2="390" y2="200"/>
+    <line x1="390" y1="200" x2="390" y2="280"/>
+    <line x1="540" y1="120" x2="540" y2="200"/>
+    <line x1="540" y1="200" x2="540" y2="280"/>
+    <line x1="390" y1="120" x2="540" y2="120"/>
+    <line x1="390" y1="200" x2="540" y2="200"/>
+    <line x1="390" y1="280" x2="540" y2="280"/>
+    <line x1="390" y1="200" x2="540" y2="120"/>
+    <line x1="390" y1="200" x2="540" y2="280"/>
+  </g>
+  <g fill="#ffffff" stroke="#444" stroke-width="1.2">
+    <circle cx="390" cy="120" r="9"/><circle cx="390" cy="200" r="9"/><circle cx="390" cy="280" r="9"/>
+    <circle cx="540" cy="120" r="9"/><circle cx="540" cy="200" r="9"/><circle cx="540" cy="280" r="9"/>
+  </g>
+  <text x="465" y="320" font-size="10.5" fill="#333" text-anchor="middle">真实 BGP + eBPF 转发；+Grid 6 路 ISL</text>
+  <text x="465" y="334" font-size="10.5" fill="#333" text-anchor="middle">（同轨前/后向 + 异轨左/右向）</text>
+
+  <!-- 右侧：引擎 + Web -->
+  <g stroke="#444" stroke-width="1">
+    <rect x="606" y="88" width="188" height="96" fill="#fbfbfb" rx="4"/>
+    <rect x="606" y="212" width="188" height="96" fill="#fbfbfb" rx="4"/>
+  </g>
+  <text x="618" y="108" font-size="11.5" font-weight="bold" fill="#111">链路动态引擎 dynamics/</text>
+  <g font-size="9.8" fill="#333">
+    <text x="618" y="124">轨道递推 → 时延/通断</text>
+    <text x="618" y="138">tc netem delay·rate</text>
+    <text x="618" y="152">+ ip link up/down</text>
+    <text x="618" y="166">→ link_state.json 发布</text>
+  </g>
+  <text x="618" y="232" font-size="11.5" font-weight="bold" fill="#111">Web 观测层 web/</text>
+  <g font-size="9.8" fill="#333">
+    <text x="618" y="248">BGP 事件流 / 路径实查</text>
+    <text x="618" y="262">延迟·带宽实测</text>
+    <text x="618" y="276">Canvas 星座/链路可视化</text>
+    <text x="618" y="290">（零依赖 · 离线）</text>
+  </g>
+
+  <!-- 引擎 -> 星座；星座 -> Web -->
+  <g stroke="#555" stroke-width="1" fill="none" stroke-dasharray="4 3">
+    <line x1="604" y1="136" x2="552" y2="136" marker-end="url(#arrow)"/>
+    <line x1="552" y1="260" x2="604" y2="260" marker-end="url(#arrow)"/>
+  </g>
+  <text x="578" y="128" font-size="9" fill="#666" text-anchor="end">下发</text>
+  <text x="578" y="274" font-size="9" fill="#666" text-anchor="end">采集</text>
+
+  <text x="36" y="436" font-size="10.5" fill="#555">部署：containerlab deploy（每星一容器，veth 组网）；镜像 Dockerfile 多阶段构建（FRR + BIRD2 + eBPF 编译产物 + iperf3）。</text>
+  <text x="36" y="454" font-size="10.5" fill="#555">虚实同步机制：仿真步 → 引擎把虚拟时延/通断下发为真实 netem/接口状态 → 真实路由协议收敛 → Web 读回，形成闭环。</text>
+
+  <!-- 图例 -->
+  <g font-size="10" fill="#333">
+    <text x="36" y="486">部署规模：144（12×12，eBPF 全功能）/ 256（16×16，完全收敛稳定）/ 320（16×20，暴露内核缺陷）；控制面可扩展至 1584 节点。</text>
+  </g>
+</svg>

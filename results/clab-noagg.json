@@ -1,0 +1,43 @@
+{
+  "stack": "ocrm-noagg",
+  "started": "2026-07-31 21:36:51",
+  "converged": true,
+  "fib": {
+    "per_node": {
+      "sat0-0": 23,
+      "sat0-1": 23,
+      "sat0-2": 23,
+      "sat0-3": 23,
+      "sat0-4": 23,
+      "sat0-5": 23,
+      "sat1-0": 23,
+      "sat1-1": 23,
+      "sat1-2": 23,
+      "sat1-3": 23,
+      "sat1-4": 23,
+      "sat1-5": 23,
+      "sat2-0": 23,
+      "sat2-1": 23,
+      "sat2-2": 23,
+      "sat2-3": 23,
+      "sat2-4": 23,
+      "sat2-5": 23,
+      "sat3-0": 23,
+      "sat3-1": 23,
+      "sat3-2": 23,
+      "sat3-3": 23,
+      "sat3-4": 23,
+      "sat3-5": 23
+    },
+    "avg_fib": 23.0,
+    "max_fib": 23,
+    "flat_baseline": 23,
+    "aggregation": false,
+    "lsdb_full": true
+  },
+  "connectivity": {
+    "ok": 552,
+    "total": 552,
+    "rate": 1.0
+  }
+}

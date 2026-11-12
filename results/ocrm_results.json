@@ -1,0 +1,32 @@
+{
+  "experiment_duration_s": 300,
+  "convergence": {
+    "avg_ms": 553.1,
+    "events": 181,
+    "local_reasoning_ratio": 0.78
+  },
+  "path_stability": {
+    "PSI": 0.214,
+    "avg_duration_s": 64.1,
+    "rerouting_per_hour": 444.0
+  },
+  "resource": {
+    "avg_cpu_percent": 12.8,
+    "avg_memory_mb": 48.1,
+    "routing_overhead_percent": 0.03
+  },
+  "kv_cache": {
+    "avg_hit_ratio": 0.72,
+    "nodes_reporting": 24
+  },
+  "data_plane": {
+    "packets_sent": 5400,
+    "packets_delivered": 5365,
+    "delivery_ratio": 0.9935,
+    "dropped_no_route": 0,
+    "dropped_link_down": 35,
+    "dropped_ttl": 0,
+    "avg_e2e_delay_ms": 13.48,
+    "avg_hops": 3.06
+  }
+}
